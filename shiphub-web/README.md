@@ -19,3 +19,9 @@ Each order card displays a status badge and a **Mark as Shipped** button. The bu
 - `http/client.ts` checks `response.ok` and throws an error for failed requests.
 - The order API functions return `{ data, error }` to `OrderDetails`.
 - `OrderDetails` renders the orders, or the error message, based on that result.
+
+Clone the repository:
+```bash
+git clone [https://github.com/iknoul/Plugin-hive-training-Day-2.git](https://github.com/iknoul/Plugin-hive-training-Day-2.git)
+cd PluginHive-Training-Day-1
+```
