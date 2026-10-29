@@ -1,0 +1,12 @@
+Validating the data that is intracting with our API or DB is crucial to avoid any kind of 
+data breach or our resources mis-use(unauthorized resource usage, slowing or crashing server, 
+db or and apis). Even we only recieving data from our own web client, might the unnoticed bugs
+can effect our whole system our flow that might cost our reputation, data loss and underved 
+workloads.
+Also attackers can tamper our websites and change the headers, request contents or make automated 
+attacks.So it is crucial for us to protect our most importent part (data, resource availablility) safe.
+
+Without backend validation the server blindly believes the incoming data that might cause sql-noSql 
+injection attacks, logical bugs (making status shipped after delivery that might makes frond-end flow
+break or user confusions), Invalid states (eg: status = Sheepped), storing non-exist reference values
+ or huge sized or wrong shaped data that might not keep our rules.

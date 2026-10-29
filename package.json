@@ -1,0 +1,23 @@
+{
+  "name": "shiphub-capstone",
+  "version": "1.0.0",
+  "description": "e-commerce application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev --prefix shiphub-api\" \"npm run dev --prefix shiphub-web\"",
+    "start:api": "npm run dev --prefix shiphub-api",
+    "start:web": "npm run dev --prefix shiphub-web",
+    "install:all": "npm install --prefix shiphub-api && npm install --prefix shiphub-web",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iknoul/Plugin-hive-training-Day-2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iknoul/Plugin-hive-training-Day-2/issues"
+  },
+  "homepage": "https://github.com/iknoul/Plugin-hive-training-Day-2#readme"
+}
