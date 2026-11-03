@@ -44,3 +44,11 @@ export const updateOrderStatus = async (id: string, status: OrderStatus): Promis
     body: JSON.stringify({ status }),
   });
 };
+
+export const createOrder =  async ({customer, product}: {customer: string, product: string}) => {
+  return apiRequest('/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ customer, product }),
+  });
+}
