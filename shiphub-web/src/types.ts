@@ -5,6 +5,9 @@ export const ORDER_STATUSES = [
 export const UNCHANGEBLE_STATUSES = [ 'Shipped', 'Delivered', 'Cancelled' ]
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+// define StatusCounts
+export type StatusCounts = Record<OrderStatus, number>;
 export interface Order {
   id: string;
   customer: string;
