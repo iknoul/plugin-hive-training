@@ -1,11 +1,16 @@
 //## Day two
 import express from 'express';
 import cors from 'cors';
+import {config} from './config.js';
+import { logger } from './libs/logger.js';
+import { requestLogger } from './middleware/request-logging.js';
 import { getAllOrders, getOrderById, createOrder, updateOrder } from './order-store.js'; 
 import { isValidObject, isValidString, isValidOrderId, isValidPatchFields, isValidStatus } from './libs/validation.js';
 
 
-const app = express();         
+const app = express();
+
+app.use(requestLogger);  // Register the common middleware globally       
 app.use(cors());                
 app.use(express.json());        
 
@@ -21,7 +26,7 @@ app.get('/orders/:id', (req, res) => {
   const order = getOrderById(orderId);
  
   if (!order) {
-    return res.status(404).json({            // 'return' stops the handler
+    return res.status(404).json({
       error: 'Order not found',
       details: 'No order exists with ID ' + orderId,
     });
@@ -96,7 +101,6 @@ app.use((req, res) => {
   });
 });
  
-const PORT = 3000;
-app.listen(PORT, () => {        // start accepting requests
-  console.log('ShipHub API running at http://localhost:' + PORT);
+app.listen(config.port, () => {        // start accepting requests
+  logger.info('ShipHub API running at http://localhost:' + config.port);
 });
