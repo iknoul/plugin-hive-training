@@ -1,111 +1,104 @@
 
-import OrderList from './OrderList.tsx';
-import {fetchOrders, updateOrderStatus} from '../http/order-apis.ts'
 import type { Order, OrderStatus } from '../types.ts';
+import OrderList from './OrderList.tsx';
+import {fetchOrders, updateOrderStatus } from '../http/order-apis.ts';
+import {StatusSummary } from './StatusSummary .tsx';
 import { useEffect, useState } from 'react';
 
 
 export default function OrderDetails(){
 
+    const [filterStatus, setFilterStatus] = useState<OrderStatus | ''>('')
+    const [searchQuery, setSearchQuery] = useState<string>('')
+    const [debouncedQuery, setDebouncedQuery] = useState(''); // Updates only after 400ms of inactivity
     const [orders, setOrders] = useState<Order[]>([]);
     const [error, setError] = useState<string | null>('')
     const [loading, setLoading] = useState<boolean>(false)
-    const [filterStatus, setFilterStatus] = useState<OrderStatus | ''>('')
 
-
-    // Done this way to Use one delegated click listener with closest() and data-id.
-    const handleContainerClick = async (event: React.MouseEvent) => {
-
-        const target = event.target as HTMLElement;
-
-        // 1. Find the closest order card wrapper using .closest()
-        const card = target.closest('.order-item');
-        if (!card) return; // Exit if the click wasn't inside an order card
-
-        // 2. Extract the unique ID from data-id
-        const orderId = (card as HTMLElement).dataset.id;
-        
-        if(!orderId) {
-            alert('Something went wrong')
-            return
-        }
-        // Check if the clicked element is the ship button
-        if (target.classList.contains('ship-btn')) {
-
-            // updateOrderStatus(orderId, 'Shipped');
-
-            const button = target as HTMLButtonElement;
-
-            try {
-                // 1. Mute/disable the specific button and update its look/text if desired
-                button.disabled = true;
-                button.textContent = 'Updating...';
-
-                // 2. Send the PATCH request to update order status
-                const response = await  updateOrderStatus(orderId, 'Shipped');
-                if(response){
-                    // 2. Find the status element inside this specific card and update its text
-                const statusElement = card.querySelector('.status-badge');
-                    if (statusElement) {
-                        statusElement.textContent = 'Shipped';
-                    }
-                } 
-
-            } catch (err: any) {
-                console.error(err.message || 'Failed to update order status');
-                // Re-enable the button if something goes wrong so the user can try again
-                button.disabled = false;
-            } finally {
-                // Just for use the finally keyword
-                button.textContent = 'Mark as Shipped'
-            }
-        }
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const query = event.target.value;
+        setSearchQuery(query);
     }
+
+    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatus = event.target.value as OrderStatus | '';
+        setFilterStatus(selectedStatus);
+    }
+
+    const handleMarkAsShipped = async (orderId: string) => {
+        try {
+            const updatedOrder = await updateOrderStatus(orderId, 'Shipped');
+            // Update the order in the local state
+            setOrders(orders.map(order => order.id === orderId ? { ...order, status: updatedOrder.status } 
+                : order));
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     useEffect(() => {
         let cancelled = false;
-        setLoading(true)
-        fetchOrders(filterStatus).then((res) => {
+
+        const loadOrders = async () => {
+            setLoading(true);
+
+            const res = await fetchOrders(filterStatus, debouncedQuery);
+
             if (cancelled) return;
+
             setOrders(res.data ?? []);
             setError(res.error);
-            setLoading(false)
-        });
-        
-        return () => { cancelled = true; }; // ignore stale responses
-    }, [filterStatus]);
-
-    useEffect(() => {
-        const handler = (e: Event) => {
-            const target = e.target as HTMLElement;
-            const filter = target.closest('.filter-slct') as HTMLSelectElement | null;
-
-            if (filter) {
-            setFilterStatus((filter.value as OrderStatus) || '');
-            }
+            setLoading(false);
         };
 
-        document.addEventListener('change', handler);
-        return () => document.removeEventListener('change', handler);
-    }, []);
+        void loadOrders();
 
-    if(loading) return <p>Loading ...</p>
-
-    if(error) return <p>Something went wrong</p>
+        return () => {
+            cancelled = true;
+        };
+    }, [filterStatus, debouncedQuery]);
 
     return (
-        <div className='order-details' onClick={handleContainerClick}>
-            
-            <select name='status' className='filter-slct'>
-                <option value="">Select Status</option>
-                <option value=''>All</option>
-                <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-            </select>
+        <div className='order-details'>
 
-            <OrderList Orders = {orders ?? []}  />
+            <div className='order-summary-bar'>            
+                <div className='order-toolbar'>
+                    <input type="text" placeholder="Search by customer or product" 
+                        className='search-input' onChange={handleSearchChange}
+                    />
+                    <select name='status' className='filter-slct' onChange={handleSelectChange}>
+                        <option value="">Select Status</option>
+                        <option value=''>All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+
+                <StatusSummary  orders={orders} />
+
+            </div>
+
+            {loading && <p>Loading...</p>}
+
+            {error && <p>Something went wrong: {error}</p>}
+
+            {!loading && !error && (
+            <OrderList
+                Orders={orders}
+                handleMarkAsShipped={handleMarkAsShipped}
+            />
+            )}
               
         </div>
     )    

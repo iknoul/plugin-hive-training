@@ -9,17 +9,19 @@ export type FetchResult<T> = {
 
 
 export const fetchOrders = async (
-  status?: OrderStatus | ''
+  status?: OrderStatus | '',
+  searchQuery?: string
 ): Promise<FetchResult<Order[]>> => {
   const params = new URLSearchParams();
   if (status) params.set('status', status);
+  if (searchQuery) params.set('search', searchQuery);
   const query = params.toString();
 
   try {
-    const res = await apiRequest(
-      `/orders${query ? `?${query}` : ''}`,
-      { method: 'GET' }
-    );
+    const url = query ? `/orders?${query}` : '/orders';
+
+    const res = await apiRequest(url, { method: 'GET' });
+
     return { data: res.data, error: null };
   } catch (err) {
     return {

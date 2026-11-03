@@ -4,9 +4,10 @@ import StatusBadge from './StatusBadge.tsx';
 
 type OrderListProps = Readonly<{
     Orders: Order[];
+    handleMarkAsShipped: (orderId: string) => void; 
 }>
 
-export default function OrderList({Orders}:OrderListProps){
+export default function OrderList({Orders, handleMarkAsShipped}:OrderListProps){
 
     if(Orders.length === 0) { return  <p> No Orders found</p> }
 
@@ -31,7 +32,8 @@ export default function OrderList({Orders}:OrderListProps){
                                 
                             </td>
                             <td>
-                            {UNCHANGEBLE_STATUSES.includes(order.status) ? null : <button className='ship-btn'>Mark as Shipped</button>}
+                            {UNCHANGEBLE_STATUSES.includes(order.status) ? null 
+                            : <button className='ship-btn' onClick={() => handleMarkAsShipped(order.id)}>Mark as Shipped</button>}
                             </td>
                         </tr>
                     )

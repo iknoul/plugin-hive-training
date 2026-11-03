@@ -1,5 +1,5 @@
 import OrderDetails from './components/OrderDetails.tsx';
-
+import './App.css';
 
 export default function App() {
   return (

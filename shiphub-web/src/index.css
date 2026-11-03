@@ -1,12 +1,60 @@
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 .container .header {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.container .order-summary-bar {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 16px;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: #b3dce1;
+}
+
+.container .order-summary-bar .order-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.container .order-summary-bar .order-toolbar .filter-slct, .search-input {
+  font-size: 13px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+   outline: none;
+  transition: border-color 0.2s ease; 
+}
+
+.container input:focus,
+.container select:focus {
+  outline: none;
+  border-color: #888; 
+}
+
+.container .order-summary-bar .counts-container {
+  width: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.container .order-summary-bar .counts-container .count-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
 }
 
 .container .order-details {
