@@ -14,7 +14,15 @@ const orders = [
 let nextId = 11;
 export function getAllOrders(filters = {}) {
   let result = [...orders];                     
+  if (filters.searchQuery) {
+    const query = filters.searchQuery.toLowerCase();
+    result = result.filter(o => 
+      o.customer.toLowerCase().includes(query) || 
+      o.product.toLowerCase().includes(query)
+    );
+  }
   if (filters.status) result = result.filter(o => o.status === filters.status);
+
   return result;
 }
 
