@@ -27,6 +27,7 @@ app.get('/orders/:id', (req, res, next) => {
   const order = getOrderById(orderId);
  
   if (!order) {
+    logger.debug(`Error with finding this order${orderId} with type ${typeof orderId}`)
     return next(new HttpError(404, 'Order not found' ));
   }
 

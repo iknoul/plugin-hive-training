@@ -12,10 +12,8 @@ export const notFound = (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
 
   // Handle malformed JSON
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-      return res.status(400).json({
-          message: 'Malformed JSON in request body'
-      });
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {  
+      err. message = 'Malformed JSON in request body'
   }
 
   const statusCode = err.status || 500;
