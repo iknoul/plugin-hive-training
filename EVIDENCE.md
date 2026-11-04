@@ -67,7 +67,7 @@ Output:
 
 Test: a real bug to demonstrate a generic client-facing.
 --------------------------------------------------------
-Procedure: Made a syntax err in orders getting api and tried to fetch order from web
+Procedure: Made a reference err in orders getting api and tried to fetch order from web
 
 Output (server logs):
     [api] [INFO] 2026-11-04T03:37:52.561Z: [INFO] OPTIONS /orders 204

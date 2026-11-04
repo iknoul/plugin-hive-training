@@ -1,0 +1,18 @@
+I intentionally put a bug on getApi function in orders api, where users orders request
+with filter processed. Even though the route is basic and didn't catch the error, the 
+common error handler middleware handled it without crashing the app and send appropriate 
+response to user with efficient level logging (eg: logger.error(err)).
+
+The flow: Client attempt to fetch orders data with filters and searchQuries. The Api
+recieves, loggs the request and the request hit the matched route. Get order function
+inside the route has bug and throwed refernce error(i wrongly called a variable's name), 
+it hasn't any error caching mechanism (due to basic prototype) and throwed to parent, 
+parent the route also didn't has error caching mechanism so the express passed the 
+request with error to the next middleware error-handler, error-handler checks the error 
+instance type and send back the response to the client with appropriate error status and
+message and logged the error. Now client can easly show the error message to user by 
+checking status code.
+
+Due to proper loggs and log-levels, i easly found the failure and its importence when it 
+occered, understood cause and type of the error and resolved. When our application grows
+we can increese the loggs complexity and failure resilience.
