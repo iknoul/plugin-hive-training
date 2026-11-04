@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "e-commerce application",
   "main": "index.js",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "init-env": "node scripts/init-env.mjs",
 
