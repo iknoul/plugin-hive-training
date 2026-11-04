@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.get('/orders', (req, res) => {
   const filters = { status: req.query.status, searchQuery: req.query.search };
-  const orders = getAllOrders(filter);
+  const orders = getAllOrders(filters);
   res.status(200).json({success: true, count: orders.length, data: orders });
 });
 
