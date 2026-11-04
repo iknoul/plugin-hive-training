@@ -6,7 +6,8 @@ import { logger } from './libs/logger.js';
 import { requestLogger } from './middleware/request-logging.js';
 import { getAllOrders, getOrderById, createOrder, updateOrder } from './order-store.js'; 
 import { isValidObject, isValidString, isValidOrderId, isValidPatchFields, isValidStatus } from './libs/validation.js';
-
+import { errorHandler, notFound } from './middleware/error-handler.js';
+import { HttpError } from './libs/http-error.js';
 
 const app = express();
 
@@ -16,91 +17,90 @@ app.use(express.json());
 
 app.get('/orders', (req, res) => {
   const filters = { status: req.query.status, searchQuery: req.query.search };
-  const orders = getAllOrders(filters);
+  const orders = getAllOrders(filter);
   res.status(200).json({success: true, count: orders.length, data: orders });
 });
 
 
-app.get('/orders/:id', (req, res) => {
+app.get('/orders/:id', (req, res, next) => {
   const orderId = req.params.id;
   const order = getOrderById(orderId);
  
   if (!order) {
-    return res.status(404).json({
-      error: 'Order not found',
-      details: 'No order exists with ID ' + orderId,
-    });
+    return next(new HttpError(404, 'Order not found' ));
   }
+
   res.status(200).json({success: true, data: order });
 });
 
 
-app.post('/orders', (req, res) => {
+app.post('/orders', (req, res, next) => {
   if (!isValidObject(req.body)) {
-    return res.status(400).json({ error: 'Invalid request body' });
+    return next(new HttpError(400, 'Invalid request body' ));
   }
   const { customer, product } = req.body;
   if (!customer || !product) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return next(new HttpError(400, 'Missing required fields' ));
   }
   if (!isValidString(customer) || !isValidString(product)) {
-    return res.status(400).json({ error: 'Invalid field types' });
+    return next(new HttpError(400, 'Invalid field types' ));
   }
   const order = createOrder(customer.trim(), product.trim());
   res.status(201).json({success: true, data: order });
 });
 
-app.patch('/orders/:id', (req, res) => {
+app.patch('/orders/:id', (req, res,next) => {
   const orderId = req.params.id;
   const updates = req.body;
 
   if(!isValidOrderId(orderId)) {
-    return res.status(400).json({ error: 'Invalid order ID format' });
+    return next(new HttpError(400, 'Invalid order ID format' ));
   }
-  if (!isValidObject(updates)) { //
-    return res.status(400).json({ error: 'Invalid request body' });
+  if (!isValidObject(updates)) { 
+    return next(new HttpError(400, 'Invalid request body' ));
   }
 
   if (!isValidPatchFields(updates)) {  // Reject unknown fields
-    return res.status(400).json({ error: 'Invalid fields in request body' });
+    return next(new HttpError(400, 'Invalid order ID format' ));
+
   }
 
   if(updates.status && !isValidStatus(updates.status)) {
-    return res.status(400).json({error: 'Invalid Status'})
+    return next(new HttpError(400, 'Invalid Status' ));
+
   }
 
   const updatedOrder = updateOrder(orderId, updates);
+
   if (!updatedOrder) {
-    return res.status(404).json({ error: 'Order not found' });
+    return next(new HttpError(404, 'Order not found' ));
   }
+
   res.status(200).json({success: true, data: updatedOrder });
 
 }) 
 
-// JSON body, but no Content-Type header
-app.get('/test/no-content-type', (req, res) => {
-  res.status(200).end(JSON.stringify({ success: true, data: [] }));
+app.get('/health', (req, res) => {
+    res.json({ success: true, message: 'ShipHub API is Healthy' });
 });
 
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'ShipHub API is running' });
 });
 
-app.use((err, req, res, next) => {
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    return res.status(400).json({ message: 'Malformed JSON in request body' });
-  }
-  next(err);
-});
+// Catch-all for unknown routes
+app.use(notFound);
 
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Not Found',
-    message: `Route ${req.originalUrl} does not exist`
-  });
-});
+// CENTRAL ERROR HANDLER
+app.use(errorHandler);
  
-app.listen(config.port, () => {        // start accepting requests
+const server = app.listen(config.port, () => {        // start accepting requests
   logger.info('ShipHub API running at http://localhost:' + config.port);
 });
+
+//Handle server listen errors with a non-zero exit.
+server.on('error', (err) => {
+  logger.error('Server failed to start, Exiting with code 1')
+
+  process.exit(1)
+})

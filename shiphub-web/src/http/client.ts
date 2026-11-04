@@ -1,11 +1,12 @@
-const API_BASE_URL = 'http://localhost:3000'; // Update with your backend URL
+import {ENV} from '../config/env.ts';
 
 export async function apiRequest(endpoint: string, options = {}) {
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // use ENV.API_URL as the base URL for the API
+  const response = await fetch(`${ENV.API_URL}${endpoint}`, {
     ...options,
     headers: defaultHeaders,
   });
