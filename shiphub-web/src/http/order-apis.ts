@@ -1,8 +1,14 @@
-import type { Order, OrderStatus } from "../types";
+import type { Order, OrderStatus, Shipment } from "../types";
 import { apiRequest } from "./client";
 
+export type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
 
-export type FetchResult<T> = {
+export type FetchResult<T> = Partial<Pagination> & {
   data: T | null;
   error: string | null;
 };
@@ -37,7 +43,7 @@ export const fetchOrderById = async (id: string): Promise<Order> => {
   });
 };
 
-export const updateOrderStatus = async (id: string, status: OrderStatus): Promise<Pick<Order, 'status'>> => {
+export const updateOrderStatus = async (id: string, status: OrderStatus): Promise<FetchResult<Pick<Order, 'status'>>> => {
   return apiRequest(`/orders/${encodeURIComponent(id)}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -50,5 +56,22 @@ export const createOrder =  async ({customer, product}: {customer: string, produ
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ customer, product }),
+  });
+}
+
+export const fetchShipmentsByOrder = async ({id, page,limit}:
+  {id: string, page: number, limit: number}): Promise<FetchResult<Shipment[]>> => {
+  return apiRequest(`/orders/${encodeURIComponent(id)}/shipments?page=${page}&limit=${limit}`, {
+    method: 'GET',
+  });
+};
+
+export const createShipment =  async ({
+  orderId, trackingNumber, carrier, idempotencyKey
+}: Pick<Shipment, 'orderId' | 'carrier' | 'trackingNumber'>&{idempotencyKey?: string}) => {
+  return apiRequest(`/orders/${orderId}/shipments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
+    body: JSON.stringify({ carrier, trackingNumber }),
   });
 }
