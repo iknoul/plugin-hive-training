@@ -60,7 +60,7 @@ export default function OrderDetails(){
                 setPagination({
                     page: res.page || 1,
                     limit: res.limit || 1,
-                    total: res.total || 1,
+                    total: res.total || 0,
                     totalPages: res.totalPages || 1,
                 })
                 setError(res.error ?? null);
@@ -111,7 +111,7 @@ export default function OrderDetails(){
  
             <Pagination 
                 pagination={pagination}
-                count = {error ? 0 : shipments.length ?? 0}
+               count={error ? 0 : shipments.length}
                 limit={limit}
                 loading={loading}
                 handlePageChange={setDebouncedPage}
