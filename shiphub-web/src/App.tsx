@@ -1,4 +1,6 @@
-import OrderDetails from './components/OrderDetails.tsx';
+import OrderDetails from './pages/OrderDetails.tsx';
+import Orders from './pages/Orders.tsx';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 
 export default function App() {
@@ -10,7 +12,13 @@ export default function App() {
       </div>
 
       <div className="content">
-        <OrderDetails />
+        <Routes>
+          <Route path="/" element={<Orders />} />
+          <Route path="/orders/:id" element={<OrderDetails />} />
+
+          <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+        </Routes>
+        
       </div>
 
     </main>

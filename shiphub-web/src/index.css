@@ -1,12 +1,27 @@
 .container {
   max-width: 800px;
+  min-height: 97vh;
+
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px 24px 0 24px;
 }
 
 .container .header {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.content { 
+  padding: 0 8px;
+  border: 2px solid rgb(57, 152, 216);
+}
+
+.content, .order-details, .table-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-overlay {
@@ -19,6 +34,10 @@
 }
 
 .modal-overlay .modal {
+  width: 350px;
+  background-color: #ccd9dc;
+  border-radius: 4px;
+  border: 2px solid rgb(65, 100, 106);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -34,12 +53,20 @@
 }
 
 .modal-overlay .modal-actions {
+  width: 100%;
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
   margin-top: 8px;
 }
 
-.container .modal-overlay input {
+.modal-overlay .modal-actions .btn-primary {
+  width: 100%;
+  min-height: 36px;
+}
+
+.container .modal-overlay input, select {
+  width: 100%;
   font-size: 13px;
   padding: 8px;
   border-radius: 4px;
@@ -58,7 +85,7 @@
 .container .btn-primary {
   display: flex;
   color: #fff;
-  background-color: #129ab8;
+  background-color: #1085a0;
   align-items: center;
 }
 
@@ -117,9 +144,12 @@
 }
 
 .container .order-details {
-  border: 1px solid #ccc;
   padding: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 4px;
+}
+
+.container .table-content {
+  justify-content: space-between;
 }
 
 .container .status-badge {
@@ -143,4 +173,53 @@
   font-weight: bold;
   grid-template-columns: 1fr 1fr 1fr;
   text-align: left;
+}
+
+.container .pagination {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.container .pagination p {
+  margin: 0;
+  width: max-content;
+  white-space: nowrap;
+}
+.container .pagination .page {
+  display: flex;
+  gap: 8px;
+  text-wrap: nowrap;
+}
+
+.container .pagination .item-counts {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+}
+
+.container .pagination .limit {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4px;
+}
+
+.container .pagination .limit input {
+  max-width: 42px;
+}
+
+.container .pagination .page .page-action-icon {
+  font-weight: 700;
+  background-color: #129ab8;
+  color: rgb(233, 247, 255);
+}
+
+.container .pagination .page .page-action-icon:disabled {
+  background-color: #d0d0d0;
 }
