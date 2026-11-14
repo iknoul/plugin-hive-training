@@ -1,13 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import { UNCHANGEBLE_STATUSES, type Order } from '../types.ts';
 import StatusBadge from './StatusBadge.tsx';
 
 
 type OrderListProps = Readonly<{
     Orders: Order[];
-    handleMarkAsShipped: (orderId: string) => void; 
+    handleMarkAsShipped: (orderId: string) => void;
 }>
 
 export default function OrderList({Orders, handleMarkAsShipped}:OrderListProps){
+
+     const navigate = useNavigate();
+
+    const handleViewOrder = async (orderId: string)=> {
+       await navigate(`orders/${orderId}`)
+    }
 
     if(Orders.length === 0) { return  <p> No Orders found</p> }
 
@@ -18,7 +25,8 @@ export default function OrderList({Orders, handleMarkAsShipped}:OrderListProps){
                     <th>Order ID</th>
                     <th>Customer</th>
                     <th>Status</th>
-                    <th></th>
+                    <th>Mark as shipped</th>
+                    <th>Shipments</th>
                 </tr>
             </thead>    
             <tbody>
@@ -34,6 +42,9 @@ export default function OrderList({Orders, handleMarkAsShipped}:OrderListProps){
                             <td>
                             {UNCHANGEBLE_STATUSES.includes(order.status) ? null 
                             : <button className='ship-btn' onClick={() => handleMarkAsShipped(order.id)}>Mark as Shipped</button>}
+                            </td>
+                            <td>
+                                <button className='ship-btn' onClick={() => handleViewOrder(order.id)}> view</button>
                             </td>
                         </tr>
                     )

@@ -16,6 +16,16 @@ export interface Order {
   createdAt: string;
 }
 export type NewOrder = Pick<Order, 'customer' | 'product'>;
+
+export interface Shipment {
+  id: string;
+  orderId: string;
+  carrier: string;
+  trackingNumber: string;
+  createdAt: string;
+}
+export type NewShipment = Pick<Shipment, 'carrier' | 'trackingNumber'>;
+
 export interface ApiErrorBody {
   error: string;
   details?: string;
