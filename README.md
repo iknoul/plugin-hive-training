@@ -4,6 +4,13 @@
 
 Requirements: Node.js 22+
 
+Install all Clone repository:
+
+```bash
+git clone [https://github.com/iknoul/plugin-hive-training.git](https://github.com/iknoul/plugin-hive-training.git)
+cd plugin-hive-training
+```
+
 Install all dependencies:
 
 ```bash
