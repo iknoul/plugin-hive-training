@@ -1,0 +1,19 @@
+? Write approximately 150 words explaining what would break if the service restarted 
+or ran as three instances behind a load balancer, and how you would address it:
+
+
+    Assuming this question regarding the In-memory storage of our current shiphub api.
+In both mentioned scenrios will effect the resource consistency and durability as in first 
+case memory will cleared when service restart and in second case the resouce is not 100% 
+guarnteed to the user (the data may stored in another instance, and user hitted instant cant
+ read the data from another instant memory).
+
+To overcome this isses we have to store the data in a central, outside of the service place:
+in data-bases. Using different data base management systems we manage the data effiently, 
+eg: postgreSql, mongoDB etc. This dbms (data base management system) follows the acid prope-
+rty (atomacity, consistency, integrity, durability), so our data will be safe even after a 
+server restart or creating multiple instances, Also these dbms provides many other features 
+like handles unique constraints, so managing idempotency keys is simple by adding constrain 
+on idempotency key or pagination by passing offset and limit.
+
+
