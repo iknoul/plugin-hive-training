@@ -1,18 +1,30 @@
+# ShipHub
 
-## 1. System Requirements
+## Setup
 
-Ensure you have the following installed on your local machine before setting up the project:
-* **Node.js**: Version `22.x` or higher (Required for native script execution and modern runtime support).
-* **npm**: Version `10.x` or higher (comes bundled with Node.js).
-* **Git**: For version control and cloning the repository.
+Requirements: Node.js 22+
 
----
+Install all dependencies:
 
-## 2. Setup Guide
+```bash
+npm run install:all
+```
 
-To get a fresh clone of the project up and running locally, follow these steps:
+## Run
 
-1. **Clone the repository:**
-   ```bash
-   git clone <https://github.com/iknoul/plugin-hive-training.git>
-   shiphub-project && cd shiphub-project
+Start the API and frontend:
+
+```bash
+npm run dev
+```
+
+## Tests
+
+```bash
+cd shiphub-api
+node unit-test.js
+```
+
+## API Documentation
+
+See [docs/api.md](shiphub-api/docs/api.md) for API endpoints, request parameters, and responses.s
