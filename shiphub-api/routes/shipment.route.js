@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { logger } from '../libs/logger.js';
 import { HttpError } from '../libs/http-error.js';

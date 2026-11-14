@@ -1,4 +1,3 @@
-// src/routes/order.routes.js
 import { Router } from 'express';
 import { logger } from '../libs/logger.js';
 import {
@@ -75,7 +74,7 @@ orderRoutes.patch('/:id', (req, res, next) => {
   const orderId = req.params.id;
   const updates = req.body;
 
-  
+
   if (!isValidOrderId(orderId)) {
     return next(new HttpError(400, 'Invalid order ID format'));
   }

@@ -43,9 +43,19 @@ export function createOrder(customer, product) {
 
 export function updateOrder(id, updates) {
   const order = orders.find(order => order.id === id);
-  if (!order) return null;                         
-  if (updates.customer !== undefined) order.customer = updates.customer;
-  if (updates.product  !== undefined) order.product  = updates.product;
-  if (updates.status   !== undefined) order.status   = updates.status;
+  if (!order) return null;         
+
+  if (updates.customer !== undefined && order.customer !== updates.customer) {
+    order.customer = updates.customer;
+  }
+
+  if (updates.product !== undefined && order.product !== updates.product) {
+    order.product = updates.product;
+  }
+  
+  if (updates.status !== undefined && order.status !== updates.status) {
+    order.status = updates.status;
+  }
+
   return { ...order };                  
 }
