@@ -17,8 +17,30 @@ const validateLogLevel = (value) => {
     return value;
 }
 
+const validateMongoDBUri = (value) => {
+
+     if (typeof value !== 'string' || !value.trim()) {
+
+      	throw new Error('Invalid MongoDB URI: URI must be a non-empty string');
+    }
+
+     try {
+    const parsed = new URL(value.trim());
+    const validProtocols = ['mongodb:', 'mongodb+srv:'];
+
+    if (!validProtocols.includes(parsed.protocol) || !parsed.hostname) {
+      throw new Error(`Invalid MongoDB URI: ${value}`);
+    }
+
+    return value.trim();
+  } catch {
+    throw new Error(`Invalid MongoDB URI: ${value}`);
+  }
+};
+
 export const config = {
   port: validatePort(process.env.PORT || '3000'),
   logLevel: validateLogLevel(process.env.LOG_LEVEL || 'info'),
-  apiUrl: process.env.API_URL || 'http://localhost:3000'
+  apiUrl: process.env.API_URL || 'http://localhost:3000',
+  mongodbUri: validateMongoDBUri(process.env.MONGODB_URI)
 };

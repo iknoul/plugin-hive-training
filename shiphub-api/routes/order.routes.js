@@ -9,10 +9,11 @@ import {
 
 import {
   isValidObject,
-  isValidString,
   isValidOrderId,
   isValidPatchFields,
-  isValidStatus
+  isValidStatus,
+  validateNewOrder,
+  validatePriorityFilter
 } from '../libs/validation.js';
 
 import { HttpError } from '../libs/http-error.js';
@@ -20,18 +21,26 @@ import { HttpError } from '../libs/http-error.js';
 const orderRoutes = Router();
 
 // Get all orders
-orderRoutes.get('/', (req, res) => {
+orderRoutes.get('/', async (req, res, next) => {
+
   const filters = {
     status: req.query.status,
-    searchQuery: req.query.search
+    searchQuery: req.query.search,
+    priority: req.query.priority
   };
 
-  const orders = getAllOrders(filters);
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 20);
+
+  const { isValid, error } = validatePriorityFilter(req.query.priority);
+
+  if(!isValid) { return next(new HttpError(400, error))}
+
+  const orders = await getAllOrders({filters, page, limit});
 
   res.status(200).json({
     success: true,
-    count: orders.length,
-    data: orders
+    ...orders
   });
 });
 
@@ -49,31 +58,40 @@ orderRoutes.get('/:id', (req, res, next) => {
 });
 
 // Create new order
-orderRoutes.post('/', (req, res, next) => {
-  if (!isValidObject(req.body)) {
-    return next(new HttpError(400, 'Invalid request body'));
-  }
+orderRoutes.post('/', async(req, res, next) => {
+	if (!isValidObject(req.body)) {
+		return next(new HttpError(400, 'Invalid request body'));
+	}
 
-  const { customer, product } = req.body;
+	// Validate order data
+	const validation = validateNewOrder(req.body);
+	
+	if (!validation.isValid) {
+			const error = new HttpError(400, 'Order validation failed');
+			error.details = 'One or more order fields are invalid';
+			error.fields = validation.errors;
+	
+			return next(error);
+	}
 
-  if (!customer || !product) {
-    return next(new HttpError(400, 'Missing required fields'));
-  }
+	const idempotencyKey = req.get('Idempotency-Key');
+	
+	try {
+		const {order, isReplay} = await createOrder(validation.data,  idempotencyKey);
 
-  if (!isValidString(customer) || !isValidString(product)) {
-    return next(new HttpError(400, 'Invalid field types'));
-  }
-
-  const order = createOrder(customer.trim(), product.trim());
-
-  res.status(201).json({ success: true, data: order });
+		res.set('Idempotency-Replayed', String(isReplay));
+		res.status(201).json({ success: true, data: order });
+	} catch (error) {
+		next(error)
+	}
+	
 });
 
 // Patch an order
-orderRoutes.patch('/:id', (req, res, next) => {
+orderRoutes.patch('/:id', async(req, res, next) => {
+
   const orderId = req.params.id;
   const updates = req.body;
-
 
   if (!isValidOrderId(orderId)) {
     return next(new HttpError(400, 'Invalid order ID format'));
@@ -87,17 +105,23 @@ orderRoutes.patch('/:id', (req, res, next) => {
     return next(new HttpError(400, 'Unknown or invalid fields'));
   }
 
+
   if (updates.status && !isValidStatus(updates.status)) {
     return next(new HttpError(400, 'Invalid status'));
   }
 
-  const updatedOrder = updateOrder(orderId, updates);
 
-  if (!updatedOrder) {
+ try {
+    const updatedOrder = await updateOrder(orderId, updates);
+    if (!updatedOrder) {
     return next(new HttpError(404, 'Order not found'));
   }
 
   res.status(200).json({ success: true, data: updatedOrder });
+ } catch (error) {
+    return next(new HttpError(500, error.message))
+ }
+
 });
 
 export default orderRoutes;

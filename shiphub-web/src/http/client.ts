@@ -1,6 +1,6 @@
 import {ENV} from '../config/env.ts';
 
-export async function apiRequest(endpoint: string, options = {}) {
+export async function apiRequest(endpoint: string, options :RequestInit = {}) {
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
@@ -8,7 +8,10 @@ export async function apiRequest(endpoint: string, options = {}) {
   // use ENV.API_URL as the base URL for the API
   const response = await fetch(`${ENV.API_URL}${endpoint}`, {
     ...options,
-    headers: defaultHeaders,
+    headers: {
+      ...defaultHeaders,
+      ...options.headers,
+    },
   });
 
   // Automatically throw if the response isn't OK so try/catch blocks catch it

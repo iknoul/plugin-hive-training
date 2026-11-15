@@ -126,8 +126,16 @@
   border-color: #888; 
 }
 
+.container .order-summary-bar .order-toolbar .search-input {
+  max-width: 140px;
+}
+
+.container .order-summary-bar .order-toolbar .filter-slct {
+  max-width: 100px;
+}
+
 .container .order-summary-bar .counts-container {
-  width: 50%;
+  width: 42%;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;

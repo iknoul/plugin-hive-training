@@ -16,10 +16,7 @@ export function AddNewShipment({
     const [trackingNumber, setTrackingNumber] = useState<string>('');
     const [carrier, setCarrier] = useState<string>('');
 
-    // const idempotencyKey = crypto.randomUUID();
     const idempotencyKey = crypto.randomUUID();
-
-
 
     const handleAddNewShipment = () => {
             const trackingNumberLength = trackingNumber.trim().length

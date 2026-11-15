@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+      "shiphub-test": "node --test tests/unit-test.js",
+      "dev": "nodemon server.js",
+      "start": "node server.js",
+      "db:explain": "node --env-file=.env scripts/explain-query.js",
+      "db:seed": "node --env-file=.env seeders/order-seeder.js",
+      "db:migrate": "node --env-file=.env  migrations/backfill-order-priority.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "cors": "2.8.6",
     "dotenv": "18.0.9",
     "express": "5.3.0",
+    "mongoose": "^9.12.1",
     "shiphub-capstone": "file:.."
   }
 }

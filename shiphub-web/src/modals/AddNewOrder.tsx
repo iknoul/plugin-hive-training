@@ -14,6 +14,8 @@ export function AddNewOrder({
     const [customer, setCustomer] = useState('');
     const [product, setProduct] = useState('');
 
+    const idempotencyKey = crypto.randomUUID();
+
     const handleAddNewOrder = () => {
             if (!customer.trim() || !product.trim()) {
                 alert('Please fill in both customer and product fields.');
@@ -21,7 +23,7 @@ export function AddNewOrder({
             }
             
             // handling creation of new order without refreshing the whole page.
-            const newOrder = createOrder({ customer, product });
+            const newOrder = createOrder({ customer, product, idempotencyKey });
             newOrder.then(order => {
                 hanldeCreateOrder(order.data);
                 setCustomer('');
