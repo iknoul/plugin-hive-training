@@ -17,7 +17,6 @@ import {
 } from '../libs/validation.js';
 
 import { HttpError } from '../libs/http-error.js';
-import mongoose from 'mongoose';
 
 const orderRoutes = Router();
 
