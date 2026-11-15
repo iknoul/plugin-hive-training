@@ -1,25 +1,40 @@
 import { buildPaginatedResponse } from '../libs/pagination.js';
 import { Order } from '../models/order-model.js';
 import { Counter } from '../models/counter-model.js';
+import { createHash } from 'node:crypto';
+import { IdempotencyRecord } from '../models/idempotency-model.js';
 
+function generateRequestHash(orderData) {
+    const normalizedData = {
+        customer: orderData.customer.trim(),
+        product: orderData.product.trim(),
+        priority: orderData.priority ?? 'normal',
+    };
+
+    return createHash('sha256')
+        .update(JSON.stringify(normalizedData))
+        .digest('hex');
+}
 
 async function findIdempotentOrder(idempotencyKey, orderData) {
     if (!idempotencyKey) return null;
 
-    const existingOrder = await Order.findOne({ idempotencyKey });
+    const existingRecord = await IdempotencyRecord.findOne({
+        key: idempotencyKey
+    });
 
-    if (!existingOrder) return null;
+    if (!existingRecord) return null;
 
-    const isSameRequest =
-        existingOrder.customer === orderData.customer.trim() &&
-        existingOrder.product === orderData.product.trim() &&
-        existingOrder.priority === orderData.priority;
+    const requestHash = generateRequestHash(orderData);
 
-    if (!isSameRequest) {
-        throw new HttpError(422,  'Idempotency key was already used with different data');
+    if (existingRecord.requestHash !== requestHash) {
+        throw new HttpError(
+            422,
+            'Idempotency key was already used with different data'
+        );
     }
 
-    return existingOrder;
+    return Order.findOne({ id: existingRecord.resourceId });
 }
 
 export async function getAllOrders({filters = {}, page = 1, limit = 20}) {
@@ -94,9 +109,16 @@ export async function createOrder(orderData, idempotencyKey) {
     const order = await Order.create({
         id: `ORD-${String(counter.sequence).padStart(3, '0')}`,
         status: 'Pending',
-		...orderData,
-		...(idempotencyKey && { idempotencyKey }),
+		...orderData
     });
+
+	if (idempotencyKey) {
+		await IdempotencyRecord.create({
+			key: idempotencyKey,
+			requestHash: generateRequestHash(orderData),
+			resourceId: order.id,
+		});
+	}
 
 	return {
         order,

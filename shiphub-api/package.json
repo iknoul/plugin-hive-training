@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-      "shiphub-test": "node --test tests/unit-test.js",
-      "dev": "nodemon server.js",
-      "start": "node server.js",
-      "db:explain": "node --env-file=.env scripts/explain-query.js",
-      "db:seed": "node --env-file=.env seeders/order-seeder.js",
-      "db:migrate": "node --env-file=.env  migrations/backfill-order-priority.js"
+    "shiphub-test": "node --test tests/unit-test.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "db:explain": "node --env-file=.env scripts/explain-query.js",
+    "db:seed": "node --env-file=.env seeders/order-seeder.js",
+    "db:migrate": "node --env-file=.env  migrations/backfill-order-priority.js"
   },
   "keywords": [],
   "author": "",

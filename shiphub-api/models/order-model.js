@@ -12,7 +12,6 @@ const orderSchema = new mongoose.Schema({
   priority:  { type: String, enum: PRIORITY, default: 'normal' },
   createdAt: { type: Date,   required: true, default: Date.now },
   channel:   { type: String, enum: ORDER_CHANNELS, default: 'web' },
-  idempotencyKey:   { type: String, unique: true, sparse: true }
 }, { id: false, versionKey: false,
      timestamps: { createdAt: false, updatedAt: true },
      toJSON: { transform(_d, ret) { delete ret._id; return ret; } } });
