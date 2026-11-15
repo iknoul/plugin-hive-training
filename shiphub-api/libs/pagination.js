@@ -1,5 +1,5 @@
 // Pure function:  paginate result without modifying the original array.
-export function paginate(items, page = 1, limit = 20) {
+export function paginateArrayItems(items, page = 1, limit = 20) {
     const total = items.length;
     const totalPages = Math.max(1, Math.ceil(total/limit))
 
@@ -13,4 +13,14 @@ export function paginate(items, page = 1, limit = 20) {
         total,
         totalPages
     };
+}
+
+export function buildPaginatedResponse({data, total, page, limit}) {
+  const totalPages = Math.ceil(total / limit);
+  return {
+    data,
+    page,
+    total,
+    totalPages
+  }
 }

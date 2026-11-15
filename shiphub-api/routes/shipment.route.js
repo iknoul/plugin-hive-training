@@ -12,7 +12,7 @@ import {
 } from '../stores/shipment-store.js';
 
 import {  validateNewShipment } from '../libs/validation.js';
-import { paginate } from '../libs/pagination.js';
+import { paginateArrayItems as paginate} from '../libs/pagination.js';
 
 const shipmentRoutes = Router();
 
