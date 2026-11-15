@@ -1,5 +1,5 @@
 
-import type { Order, OrderStatus } from '../types.ts';
+import type { Order, OrderStatus, PRIORITY } from '../types.ts';
 import OrderList from '../components/OrderList.tsx';
 import {fetchOrders, updateOrderStatus } from '../http/order-apis.ts';
 import {StatusSummary } from '../components/StatusSummary .tsx';
@@ -10,6 +10,7 @@ import { AddNewOrder } from '../modals/AddNewOrder.tsx';
 export default function Orders(){
 
     const [filterStatus, setFilterStatus] = useState<OrderStatus | ''>('')
+    const [filterPriority, setFilterPriority] = useState<PRIORITY | ''>('')
     const [searchQuery, setSearchQuery] = useState<string>('')
     const [debouncedQuery, setDebouncedQuery] = useState(''); // Updates only after 400ms of inactivity
     const [orders, setOrders] = useState<Order[]>([]);
@@ -24,9 +25,14 @@ export default function Orders(){
         setSearchQuery(query);
     }
 
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedStatus = event.target.value as OrderStatus | '';
         setFilterStatus(selectedStatus);
+    }
+
+     const handlePriorityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatus = event.target.value as PRIORITY | '';
+        setFilterPriority(selectedStatus);
     }
 
     const handleAddNewOrderToggle = () => {
@@ -67,7 +73,11 @@ export default function Orders(){
         const loadOrders = async () => {
             setLoading(true);
 
-            const res = await fetchOrders(filterStatus, debouncedQuery);
+            const res = await fetchOrders({
+                status: filterStatus, 
+                priority: filterPriority, 
+                searchQuery: debouncedQuery
+            });
 
             if (cancelled) return;
 
@@ -81,7 +91,7 @@ export default function Orders(){
         return () => {
             cancelled = true;
         };
-    }, [filterStatus, debouncedQuery]);
+    }, [filterStatus, filterPriority, debouncedQuery]);
 
     return (
         <div className='order-details'>
@@ -106,13 +116,22 @@ export default function Orders(){
                     <input type="text" placeholder="Search by customer or product" 
                         className='search-input' onChange={handleSearchChange}
                     />
-                    <select name='status' className='filter-slct' onChange={handleSelectChange}>
-                        <option value="">Select Status</option>
+                    <select name='status' className='filter-slct' onChange={handleStatusChange}>
+                        <option value="">Status</option>
                         <option value=''>All</option>
                         <option value="Pending">Pending</option>
                         <option value="Processing">Processing</option>
                         <option value="Shipped">Shipped</option>
                         <option value="Delivered">Delivered</option>
+                    </select>
+
+                    <select name='priority' className='filter-slct' onChange={handlePriorityChange}>
+                        <option value="">Priority</option>
+                        <option value=''>All</option>
+                        <option value="normal">Normal</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                        <option value="invalid">Invalid</option>
                     </select>
                 </div>
 

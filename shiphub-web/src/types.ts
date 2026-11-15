@@ -2,6 +2,8 @@ export const ORDER_STATUSES = [
   'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled',
 ] as const;
 
+export type PRIORITY = 'normal' | 'low' | 'high'
+
 export const UNCHANGEBLE_STATUSES = [ 'Shipped', 'Delivered', 'Cancelled' ]
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];

@@ -1,4 +1,4 @@
-import type { Order, OrderStatus, Shipment } from "../types";
+import { type PRIORITY, type Order, type OrderStatus, type Shipment } from "../types";
 import { apiRequest } from "./client";
 
 export type Pagination = {
@@ -14,13 +14,15 @@ export type FetchResult<T> = Partial<Pagination> & {
 };
 
 
-export const fetchOrders = async (
-  status?: OrderStatus | '',
-  searchQuery?: string
-): Promise<FetchResult<Order[]>> => {
+export const fetchOrders = async ({
+  status,
+  searchQuery,
+  priority
+}:{status: OrderStatus | '', searchQuery: string, priority: PRIORITY | '' }): Promise<FetchResult<Order[]>> => {
   const params = new URLSearchParams();
   if (status) params.set('status', status);
   if (searchQuery) params.set('search', searchQuery);
+  if(priority) params.set('priority', priority)
   const query = params.toString();
 
   try {
@@ -51,10 +53,16 @@ export const updateOrderStatus = async (id: string, status: OrderStatus): Promis
   });
 };
 
-export const createOrder =  async ({customer, product}: {customer: string, product: string}) => {
+export const createOrder =  async ({
+  customer, product, idempotencyKey
+}: {customer: string, product: string, idempotencyKey?: string}) => {
+  
   return apiRequest('/orders', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json', ...(idempotencyKey && {
+      'Idempotency-Key': idempotencyKey,
+    }), },
     body: JSON.stringify({ customer, product }),
   });
 }
@@ -71,7 +79,10 @@ export const createShipment =  async ({
 }: Pick<Shipment, 'orderId' | 'carrier' | 'trackingNumber'>&{idempotencyKey?: string}) => {
   return apiRequest(`/orders/${orderId}/shipments`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
+    headers: { 
+      'Content-Type': 'application/json', ...(idempotencyKey && {
+      'Idempotency-Key': idempotencyKey,
+    }), },
     body: JSON.stringify({ carrier, trackingNumber }),
   });
 }
