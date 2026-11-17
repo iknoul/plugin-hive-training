@@ -1,7 +1,7 @@
 
 import mongoose from 'mongoose';
-import { connectDatabase } from '../config/db.js';
-import {Order} from '../models/order-model.js';
+import { connectDatabase } from '../config/mongodb.js';
+import {Order} from '../models/mongoose-models/order-model.js';
 
 const INDEX_NAME = 'priority_1_createdAt_-1_id_1';
 
