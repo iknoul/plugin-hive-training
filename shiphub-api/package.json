@@ -7,8 +7,11 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "db:explain": "node --env-file=.env scripts/explain-query.js",
-    "db:seed": "node --env-file=.env seeders/order-seeder.js",
-    "db:migrate": "node --env-file=.env  migrations/backfill-order-priority.js"
+    "db:seed-order": "node --env-file=.env seeders/order-seeder.js",
+    "db:seed-seller": "node --env-file=.env seeders/seller-seeder.js",
+    "db:seed-pickup-addres": "node --env-file=.env seeders/pickup_addres-seeder.js",
+    "db:order-migrate": "node --env-file=.env  migrations/backfill-order-priority.js",
+    "db:migrate-pg": "node --env-file=.env migrations/pg-migration.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +23,7 @@
     "dotenv": "18.0.9",
     "express": "5.3.0",
     "mongoose": "^9.12.1",
+    "pg": "^8.23.1",
     "shiphub-capstone": "file:.."
   }
 }

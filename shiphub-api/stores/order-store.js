@@ -1,8 +1,8 @@
 import { buildPaginatedResponse } from '../libs/pagination.js';
-import { Order } from '../models/order-model.js';
-import { Counter } from '../models/counter-model.js';
+import { Order } from '../models/mongoose-models/order-model.js';
+import { Counter } from '../models/mongoose-models/counter-model.js';
 import { createHash } from 'node:crypto';
-import { IdempotencyRecord } from '../models/idempotency-model.js';
+import { IdempotencyRecord } from '../models/mongoose-models/idempotency-model.js';
 
 function generateRequestHash(orderData) {
     const normalizedData = {
@@ -21,7 +21,7 @@ async function findIdempotentOrder(idempotencyKey, orderData) {
 
     const existingRecord = await IdempotencyRecord.findOne({
         key: idempotencyKey
-    });
+    });  
 
     if (!existingRecord) return null;
 
