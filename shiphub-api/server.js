@@ -1,7 +1,7 @@
 
 import app from './app.js';
 import { config } from './config/config.js';
-import { connectDatabase } from './config/db.js';
+import { connectDatabase } from './config/mongodb.js';
 import { logger } from './libs/logger.js';
 
 
