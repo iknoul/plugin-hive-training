@@ -109,6 +109,7 @@ export async function createOrder(orderData, idempotencyKey) {
     const order = await Order.create({
         id: `ORD-${String(counter.sequence).padStart(3, '0')}`,
         status: 'Pending',
+		items: orderData.items ?? [],
 		...orderData
     });
 

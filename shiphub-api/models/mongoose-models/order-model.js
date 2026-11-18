@@ -17,7 +17,6 @@ const pickupAddressSnapshot = new mongoose.Schema({
 })
 
 const itemSchema = new mongoose.Schema({
-  id:        { type: String, required: true, unique: true },
   name:  { type: String, required: true, trim: true, maxlength: 100 },
   type:   { type: String, required: true, trim: true, maxlength: 50 },
   sellerId:  { type: String, required: true },
@@ -35,6 +34,7 @@ const orderSchema = new mongoose.Schema({
   channel:   { type: String, enum: ORDER_CHANNELS, default: 'web' },
   items:     { 
               type: [itemSchema], 
+              required: false,
               // validate: {
               //   validator: (arr) => Array.isArray(arr) && arr.length > 0,
               //   message: 'An order must contain at least one item.'

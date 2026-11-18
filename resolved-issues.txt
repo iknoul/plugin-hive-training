@@ -1,0 +1,79 @@
+1. container name conflict
+----------------
+    context:
+        when try run a mongodb image with name mongo, there is an another
+        container with same name.
+    eg: 
+        docker run -d --name mongo --network shiphub-net -p 27018:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -v mongo_data:/data/db mongo:8.3.17
+
+        docker err: Error response from daemon: Conflict. The container name "/mongo" is already in use by container "dda1c2ab47aefb0c06f37d4b1eb3242b937a19f16ef2ec1ce9ec64fdfd2183ad". You have to remove (or rename) that container to be able to reuse that name.
+        See 'docker run --help'.
+
+    resolution:
+        removed the first container using docker container remove mongo
+    
+    plus:
+        we can listen same port for differnt containers, in same docker
+        docker resolve the calls with differnt ips.  
+
+2. external exposed port conflict
+--------------------------------
+    context:
+        when try run a mongodb container and expose the port to machines 27017,
+        the port was already equiped by theres mongodb.
+    eg: 
+        docker run -d --name mongo --network shiphub-net -p 27018:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password -v mongo_data:/data/db mongo:8.3.17
+
+        docker err:  Error response from daemon: driver failed programming external connectivity on endpoint mongo (11778bba3066246d39dc693e2d2e8a6d229cd974b47f84051420d79b3c75d06f): Bind for 0.0.0.0:27017 failed: port is already allocated.
+
+    resolution:
+        changed the external exposed port to 27018.
+    
+    plus:
+        In root machine the ports are prefixed by same ip, so conflict there.
+
+3. The legacy builder is deprecated
+-----------------------------------
+    context:
+        when try build --check ., it showed err
+    eg: 
+        docker build --check .
+
+        docker build --check .
+
+        res:failed to fetch metadata: fork/exec /usr/local/lib/     docker/cli-plugins/docker-buildx: no such file or directory
+
+        DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+        unknown flag: --check
+
+    resolution:
+        used to buildx tool.
+
+    plus:
+        use correct docker version.
+
+4. Psql is back, api should restart from stop condition
+-------------------------------------------------------
+    context:
+        When psql is down, apis fail fast architecture made api down,
+        need start when psql is back.
+    resolution:
+        add --restart unless-stopped 
+
+    plus:
+        this will restart the api service when other containers in network
+        back, if the service is stopeed by non zero code.
+
+5. Invalid port
+-------------------------------------------------------
+    context:
+        When exposed mongodb port to abc (invalid port), it shows error.
+    resolution:
+        verify the port before run.
+    
+    
+
+    

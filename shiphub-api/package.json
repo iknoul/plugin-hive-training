@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "docker:check": "docker build --check .",
+    "check": "npm run lint && npm shiphub-test && npm run docker:check",
     "shiphub-test": "node --test tests/unit-test.js",
     "dev": "nodemon server.js",
     "start": "node server.js",
