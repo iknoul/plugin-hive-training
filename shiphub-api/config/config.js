@@ -9,8 +9,6 @@ const envPath = path.resolve(__dirname, '../.env');
 
 dotenv.config({ path: envPath });
 
-console.log(envPath)
-
 const validatePort = (value) => {
   const port = Number.parseInt(value, 10);
   if (Number.isNaN(port) || port <= 0 || port > 65535) {
@@ -57,7 +55,6 @@ export function validatePgDBUri(uri) {
     return uri.trim()
 }
 
-console.log(process.env)
 export const config = {
   port: validatePort(process.env.PORT || '3000'),
   logLevel: validateLogLevel(process.env.LOG_LEVEL || 'info'),
