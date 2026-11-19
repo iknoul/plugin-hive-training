@@ -1,9 +1,13 @@
 import fs from 'node:fs/promises';
 import { postgresPool } from '../config/postgres.js';
+import dotenv from 'dotenv'
+
+dotenv.config();
+
 
 const client = await postgresPool.connect();
 
-const schemaFiles = ['../models/pg-schemas/pickups.sql', '../models/pg-schemas/sellers.sql']
+const schemaFiles = ['../models/pg-schemas/sellers.sql', '../models/pg-schemas/pickups.sql']
 try {
   await client.query('BEGIN');
   for (const filePath of schemaFiles) {
