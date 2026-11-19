@@ -9,6 +9,8 @@ const envPath = path.resolve(__dirname, '../.env');
 
 dotenv.config({ path: envPath });
 
+console.log(envPath)
+
 const validatePort = (value) => {
   const port = Number.parseInt(value, 10);
   if (Number.isNaN(port) || port <= 0 || port > 65535) {
@@ -46,9 +48,20 @@ const validateMongoDBUri = (value) => {
   }
 };
 
+export function validatePgDBUri(uri) {
+    const pattern = /^postgres(?:ql)?:\/\/[^:]+:[^@]+@[^:/]+:\d+\/.+$/;
+
+    if (!pattern.test(uri)) {
+        throw new Error('Invalid POSTGRES_URI');
+    }
+    return uri.trim()
+}
+
+console.log(process.env)
 export const config = {
   port: validatePort(process.env.PORT || '3000'),
   logLevel: validateLogLevel(process.env.LOG_LEVEL || 'info'),
   apiUrl: process.env.API_URL || 'http://localhost:3000',
-  mongodbUri: validateMongoDBUri(process.env.MONGODB_URI)
+  mongodbUri: validateMongoDBUri(process.env.MONGODB_URI),
+  postgresUri: validatePgDBUri(process.env.POSTGRES_URI)
 };

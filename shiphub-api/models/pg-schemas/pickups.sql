@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS pickup_addresses (
     address_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    seller_id INTEGER NOT NULL,
+    seller_id INTEGER NOT NULL ,
 
     pickup_label VARCHAR(50) NOT NULL,
     address TEXT NOT NULL,
@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS pickup_addresses (
         CHECK (pincode ~ '^[0-9]{6}$'),
 
     CONSTRAINT uq_seller_pickup_label_city
-        UNIQUE (seller_id, address_label, city)
+        UNIQUE (seller_id, pickup_label, city)
 );
 
 -- 1
 -- predicted => change the coloumn name
 -- response =>
 --  returned 'ALTER TABLE' string and changed the coloumn name
-ALTER TABLE pickup_addresses RENAME COLUMN address_label TO label;
+-- ALTER TABLE pickup_addresses RENAME COLUMN address_label TO label;
 
 -- 2
 -- predicted => show sellers and their hub counts, except one seller ( only 3 seller should be there)
@@ -48,9 +48,9 @@ HAVING COUNT(sa.address_id) > 1;
 --  shop         |    10 |            10
 --  warehouse    |     6 |             6
 -- (2 rows)
-SELECT pa.label as pickup_types, COUNT(pa.address_id) as count, COUNT(s.seller_id) as sellers_count
+SELECT pa. pickup_label as pickup_types, COUNT(pa.address_id) as count, COUNT(s.seller_id) as sellers_count
 FROM pickup_addresses pa LEFT JOIN sellers s ON  pa.seller_id = s.seller_id
-GROUP BY pa.label;
+GROUP BY pa.pickup_label;
 
 
 -- 4
@@ -77,9 +77,9 @@ GROUP BY pa.label;
 --  Thrissur           | shop         |     1
 -- (16 rows)
 
-SELECT pa.city as city, pa.label as pickup_types,  COUNT(pa.address_id) as count
+SELECT pa.city as city, pa.pickup_label as pickup_types,  COUNT(pa.address_id) as count
 FROM pickup_addresses pa LEFT JOIN sellers s ON  pa.seller_id = s.seller_id
-GROUP BY pa.city, pa.label;
+GROUP BY pa.city, pa.pickup_label;
 
 
 
