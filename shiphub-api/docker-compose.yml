@@ -1,0 +1,64 @@
+name: shiphub 
+
+services:
+    migrate:
+        build: .
+        command: npm run db:migrate-pg
+        env_file:
+            - .env
+        restart: "no"
+        depends_on:
+            postgres:
+                condition: service_healthy
+    api:
+        build: .
+        # command: npm run db:migrate-pg, moved as seperate service
+        ports: 
+            - "3000:3000"
+        env_file:
+            - .env
+        depends_on:
+            postgres:
+                condition:  service_healthy
+            mongo:
+                condition:  service_healthy
+            migrate:
+                condition: service_completed_successfully
+        restart: unless-stopped
+    
+    postgres:
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U shiphub -d shiphub"]
+            interval: 5s
+            retries: 10
+            start_period: 10s
+
+        image: postgres:16-alpine
+        environment:
+            - POSTGRES_USER=${PG_ROOT_USER}
+            - POSTGRES_PASSWORD=${PG_ROOT_PASS}
+            - POSTGRES_DB=shiphub
+        ports:
+            - "5434:5432" 
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+    mongo:
+        image: mongo:8.3.17
+        healthcheck:
+            test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+            start_period: 10s
+        restart: always
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS}
+        ports:
+        - "27018:27017"
+        volumes:    
+        - mongo_data:/data/db
+volumes:
+    postgres_data:
+    mongo_data:
