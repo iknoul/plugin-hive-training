@@ -90,37 +90,37 @@ orderRoutes.post('/', async(req, res, next) => {
 // Patch an order
 orderRoutes.patch('/:id', async(req, res, next) => {
 
-  const orderId = req.params.id;
-  const updates = req.body;
+    const orderId = req.params.id;
+    const updates = req.body;
 
-  if (!isValidOrderId(orderId)) {
-    return next(new HttpError(400, 'Invalid order ID format'));
+    if (!isValidOrderId(orderId)) {
+      return next(new HttpError(400, 'Invalid order ID format'));
+    }
+
+    if (!isValidObject(updates)) {
+      return next(new HttpError(400, 'Invalid request body'));
+    }
+
+    if (!isValidPatchFields(updates)) {
+      return next(new HttpError(400, 'Unknown or invalid fields'));
+    }
+
+
+    if (updates.status && !isValidStatus(updates.status)) {
+      return next(new HttpError(400, 'Invalid status'));
+    }
+
+
+  try {
+      const updatedOrder = await updateOrder(orderId, updates);
+      if (!updatedOrder) {
+      return next(new HttpError(404, 'Order not found'));
+    }
+
+    res.status(200).json({ success: true, data: updatedOrder });
+  } catch (error) {
+      return next(new HttpError(500, error.message))
   }
-
-  if (!isValidObject(updates)) {
-    return next(new HttpError(400, 'Invalid request body'));
-  }
-
-  if (!isValidPatchFields(updates)) {
-    return next(new HttpError(400, 'Unknown or invalid fields'));
-  }
-
-
-  if (updates.status && !isValidStatus(updates.status)) {
-    return next(new HttpError(400, 'Invalid status'));
-  }
-
-
- try {
-    const updatedOrder = await updateOrder(orderId, updates);
-    if (!updatedOrder) {
-    return next(new HttpError(404, 'Order not found'));
-  }
-
-  res.status(200).json({ success: true, data: updatedOrder });
- } catch (error) {
-    return next(new HttpError(500, error.message))
- }
 
 });
 

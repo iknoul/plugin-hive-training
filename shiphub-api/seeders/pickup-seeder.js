@@ -1,4 +1,5 @@
 import { postgresPool as pool } from "../config/postgres.js";
+import { logger } from "../libs/logger.js";
 
 const label = [
   'shop', 'warehouse', 'shop', 'warehouse',
@@ -58,24 +59,26 @@ async function seedPickupaddress () {
 
     const client = await pool.connect();
 
-      await client.query('BEGIN');
+    await client.query('BEGIN');
 
-      // first seller remain no pickup address
-      const { rows } = await client.query(
-        `SELECT sellers.seller_id FROM SELLERS
-         OFFSET 1 
-        `
-      )
+    // first seller remain no pickup address
+    const { rows } = await client.query(
+      `SELECT sellers.seller_id FROM SELLERS
+        OFFSET 1 
+      `
+    )
+
+    const rowSellerIds = rows.map((s)=> s.seller_id)
 
     // this fn build seller id arr, first id no repeat (specified seller has one pickup address only)
-    const sellerIds = buildDynamicSellerArr(rows, address.length)
+    const sellerIds = buildDynamicSellerArr(rowSellerIds, address.length)
 
     const query = `
         INSERT INTO pickup_addresses (seller_id
-        , label, address, city, pincode)
+        , pickup_label, address, city, pincode)
         SELECT * FROM UNNEST($1::integer[], $2::varchar[], 
         $3::text[], $4::varchar[], $5::varchar[])
-        ON CONFLICT (seller_id, label, city) DO NOTHING
+        ON CONFLICT (seller_id, pickup_label, city) DO NOTHING
         RETURNING *
     `
 
@@ -87,7 +90,9 @@ async function seedPickupaddress () {
         address_pin
     ])
 
-    console.log(result, 'Pickup address seeded')
+    logger.info(result, 'Pickup address seeded')
+    
+    await client.query('COMMIT');
 
     await pool.end()
 

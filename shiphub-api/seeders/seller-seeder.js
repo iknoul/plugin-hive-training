@@ -1,4 +1,5 @@
 import { postgresPool as pool} from "../config/postgres.js";
+import { logger } from "../libs/logger.js";
 
 const sellers = [
     {name: 'Aron Jleventus', email: 'aronle@email.com'},
@@ -17,7 +18,7 @@ async function sellersSeeder() {
 
     await pool.query(query, [sellers.map((s)=> s.name), sellers.map((s)=>s.email)])
     
-    console.log('Sellers seeded');
+    logger.info('Sellers seeded');
 
     await pool.end()
 } 

@@ -60,5 +60,6 @@ export const config = {
   logLevel: validateLogLevel(process.env.LOG_LEVEL || 'info'),
   apiUrl: process.env.API_URL || 'http://localhost:3000',
   mongodbUri: validateMongoDBUri(process.env.MONGODB_URI),
-  postgresUri: validatePgDBUri(process.env.POSTGRES_URI)
+  postgresUri: validatePgDBUri(process.env.POSTGRES_URI),
+  graphqlUrl: `${process.env.API_URL}/graphql`
 };

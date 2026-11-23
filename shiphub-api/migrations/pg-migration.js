@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 
 import { postgresPool } from '../config/postgres.js';
+import { logger } from '../libs/logger.js'
 
 const client = await postgresPool.connect();
 
@@ -10,7 +11,7 @@ try {
   for (const filePath of schemaFiles) {
     const sql = await fs.readFile(new URL(filePath, import.meta.url), 'utf8');
     await client.query(sql);
-    console.log(`Applied: ${filePath}`);
+    logger.info(`Applied: ${filePath}`);
   }
   await client.query('COMMIT');
 } catch (err) {

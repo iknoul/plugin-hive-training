@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const ITEM_STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
-const ORDER_STATUSES = ['Partially Shipped', 'Partialyy Delivered',...ITEM_STATUSES]
+const ORDER_STATUSES = ['Partially Shipped', 'Partially Delivered',...ITEM_STATUSES]
 const PRIORITY = ['low', 'normal', 'high']
 const ORDER_CHANNELS = ['web', 'app']
 
@@ -17,6 +17,7 @@ const pickupAddressSnapshot = new mongoose.Schema({
 })
 
 const itemSchema = new mongoose.Schema({
+  item_id:        { type: String, required: true, unique: true },
   name:  { type: String, required: true, trim: true, maxlength: 100 },
   type:   { type: String, required: true, trim: true, maxlength: 50 },
   sellerId:  { type: String, required: true },
@@ -27,7 +28,7 @@ const itemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   id:        { type: String, required: true, unique: true },
   customer:  { type: String, required: true, trim: true, maxlength: 100 },
-  product:   { type: String, required: false, trim: true, maxlength: 100 },
+  // product:   { type: String, required: false, trim: true, maxlength: 100 },
   status:    { type: String, required: true, enum: ORDER_STATUSES, default: 'Pending' },
   priority:  { type: String, enum: PRIORITY, default: 'normal' },
   createdAt: { type: Date,   required: true, default: Date.now },
@@ -35,10 +36,10 @@ const orderSchema = new mongoose.Schema({
   items:     { 
               type: [itemSchema], 
               required: false,
-              // validate: {
-              //   validator: (arr) => Array.isArray(arr) && arr.length > 0,
-              //   message: 'An order must contain at least one item.'
-              // }
+              validate: {
+                validator: (arr) => Array.isArray(arr) && arr.length > 0,
+                message: 'An order must contain at least one item.'
+              }
             }
 }, { id: false, versionKey: false,
      timestamps: { createdAt: false, updatedAt: true },

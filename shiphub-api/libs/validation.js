@@ -30,6 +30,19 @@ const ALLOWED_PRIORITIES = new Set([
     'high'
 ]);
 
+export function isValidLimit(limit, maxLimit = 100) {
+  if (typeof limit !== 'number' || !Number.isInteger(limit)) {
+    return false;
+  }
+
+  if (limit < 1 || limit > maxLimit) {
+    return false;
+  }
+
+  return true;
+}
+
+
 export function isValidString(value) {
     return typeof value === 'string' && value.trim() !== '';
 }

@@ -19,8 +19,11 @@ export function buildPaginatedResponse({data, total, page, limit}) {
   const totalPages = Math.ceil(total / limit);
   return {
     data,
-    page,
-    total,
-    totalPages
+    pageInfo: {
+      page,
+      total,
+      totalPages,
+      limit
+    }
   }
 }

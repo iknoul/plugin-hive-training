@@ -37,7 +37,11 @@ async function findIdempotentOrder(idempotencyKey, orderData) {
     return Order.findOne({ id: existingRecord.resourceId });
 }
 
-export async function getAllOrders({filters = {}, page = 1, limit = 20}) {
+export async function getAllOrders({
+	filters = {}, 
+	page = 1, 
+	limit = 20
+}) {
 	const query = {};
 
 	if (filters.searchQuery?.trim()) {

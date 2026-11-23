@@ -7,17 +7,18 @@
     "docker:check": "docker build --check .",
     "check": "npm run lint && npm shiphub-test && npm run docker:check",
     "shiphub-test": "node --test tests/unit-test.js",
-
-    "dev": "nodemon server.js",
+    "dev": "nodemon -L -e js,mjs,json,graphql server.js",
     "start": "node server.js",
-    "setup": "node scripts/env-setup.js",
-
+    "setup": "node --env-file=.env scripts/env-setup.js",
     "db:explain": "node --env-file=.env scripts/explain-query.js",
     "db:seed-order": "node --env-file=.env seeders/order-seeder.js",
     "db:seed-seller": "node --env-file=.env seeders/seller-seeder.js",
-    "db:seed-pickup-addres": "node --env-file=.env seeders/pickup_addres-seeder.js",
+    "db:seed-pickup-addres": "node --env-file=.env seeders/pickup-seeder.js",
     "db:order-migrate": "node --env-file=.env  migrations/backfill-order-priority.js",
-    "db:migrate-pg": "node migrations/pg-migration.js"
+
+    "db:migrate-pg": "node migrations/pg-migration.js",
+    "up": "docker compose up -d --build",
+    "gql": "node tests/graphql-test.mjs"
   },
   "keywords": [],
   "author": "",
@@ -26,10 +27,17 @@
   "type": "module",
   "dependencies": {
     "cors": "2.8.6",
+    "dataloader": "^2.2.3",
     "dotenv": "18.0.9",
     "express": "5.3.0",
+    "graphql": "^17.1.0",
+    "graphql-depth-limit": "^1.1.0",
+    "graphql-http": "^1.23.1",
     "mongoose": "^9.12.1",
     "pg": "^8.23.1",
     "shiphub-capstone": "file:.."
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
