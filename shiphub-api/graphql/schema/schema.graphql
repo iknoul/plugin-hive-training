@@ -1,0 +1,115 @@
+enum OrderStatus {
+    Pending
+    Processing
+    Shipped
+    Delivered
+    Cancelled
+}
+
+type PageInfo {
+      # Non-null because pagination always returns a page number.
+    page: Int!
+
+    # Non-null because the total count is always calculated.
+    total: Int!
+
+    # Non-null because the total page count is always calculated.
+    totalPages: Int!
+
+    # Non-null because pagination always has a limit.
+    limit: Int!
+}
+
+
+# An order returned by the shippedOrders relationship.
+type Order {
+    # Non-null because every persisted order has an identifier.
+    id: ID!
+
+    # Non-null because every order requires a customer.
+    customer: String!
+
+    # Non-null because every order has a calculated status.
+    status: String!
+
+    # Non-null because priority has a default value.
+    priority: String!
+
+    # Nullable because the legacy product field is optional.
+    # For multi-item orders, this represents the matching seller's product(s).
+    product: String
+}
+
+type Seller {
+    # Non-null because every seller has a database-generated ID.
+    id: ID!
+
+    # Non-null because the PostgreSQL name column is NOT NULL.
+    name: String!
+
+    # Nullable because a seller can have no pickup address,
+    # and therefore no associated pickup city.
+    email: String
+
+    # Non-null list because the resolver always returns an array.
+    # Individual items are non-null because invalid/null entries
+    # should not be included in the result.
+    shippedItems(limit: Int = 5): ShippedItemPage
+}
+type ShippedItem {
+    # Non-null because every item has a database-generated ID.
+    id: ID!
+
+    # Non-null because the item  has customer field is NOT NULL.
+    customer: String!
+
+    # Non-null because the item  belongs to an order.
+    orderId: String!
+
+    # Non-null because the item  belongs to an order and it order has status.
+    orderStatus: String!
+
+    # Non-null because the item  has name field is NOT NULL.
+    name: String!
+
+    # Non-null because the item  has status field is NOT NULL.
+    status: String!
+
+    # Non-null because the item  has type field is NOT NULL.
+    type: String!
+}
+
+type OrderPage {
+    # The page always contains a data array, even when empty.
+    data: [Order!]!
+
+    # The page always contains page info
+    pageInfo: PageInfo!
+}
+
+type ShippedItemPage {
+    # The page always contains a data array, even when empty.
+    data: [ShippedItem!]!
+
+    # The page always contains page info
+    pageInfo: PageInfo!
+}
+
+type Query {
+    # Non-null because the resolver always returns an OrderPage.
+    orders(page: Int = 1, limit: Int = 20): OrderPage!
+
+    # Non-null because the resolver always returns an OrderPage.
+    shippedOrders(page: Int = 1, limit: Int = 20): OrderPage
+
+    seller(id: Int): Seller
+}
+
+type Mutation {
+    # Both arguments are non-null because an order ID and target status
+    # are necessary to perform the update.
+    updateOrderStatus(
+        id: ID!
+        status: OrderStatus!
+    ): Order!
+}
