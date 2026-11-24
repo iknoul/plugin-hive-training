@@ -140,89 +140,10 @@
 
     [INFO] 2026-11-23T18:53:44.501Z: 
 
-==> --- TEST 3: Non-Existing field ---
-    HTTP 400 Bad Request
-
-    [ERROR] 2026-11-23T18:53:44.511Z: GraphQL request failed:
-    [ERROR] 2026-11-23T18:53:44.511Z: {
-    "errors": [
-        {
-        "message": "Cannot query field \"bloodGroup\" on type \"Seller\".",
-        "locations": [
-            {
-            "line": 15,
-            "column": 3
-            }
-        ]
-        }
-    ]
-    }
-    [INFO] 2026-11-23T18:53:44.511Z: 
-
-==> --- TEST 4: Query with limit 500 ---
-    HTTP 200
-
-    [ERROR] 2026-11-23T18:53:44.526Z: GraphQL request failed:
-    [ERROR] 2026-11-23T18:53:44.527Z: {
-    "errors": [
-        {
-        "message": "Limit must be between 1 and 100",
-        "locations": [
-            {
-            "line": 15,
-            "column": 3
-            }
-        ],
-        "path": [
-            "sellerOne",
-            "shippedItems"
-        ],
-        "extensions": {
-            "code": "BAD_USER_INPUT",
-            "argumentName": "limit"
-        }
-        },
-        {
-        "message": "Limit must be between 1 and 100",
-        "locations": [
-            {
-            "line": 15,
-            "column": 3
-            }
-        ],
-        "path": [
-            "sellerTwo",
-            "shippedItems"
-        ],
-        "extensions": {
-            "code": "BAD_USER_INPUT",
-            "argumentName": "limit"
-        }
-        }
-    ],
-    "data": {
-        "sellerOne": {
-        "name": "Aron Jleventus",
-        "email": "aronle@email.com",
-        "shippedItems": null
-        },
-        "sellerTwo": {
-        "name": "Nooh Mespotamian",
-        "email": "noohmesa@email.com",
-        "shippedItems": null
-        }
-    }
-    }
-    [INFO] 2026-11-23T18:53:44.527Z: 
-
-==> --- TEST 5: Mutation with GET ---
-    statsCode: 405 Method Not Allowed
-
-    [ERROR] 2026-11-23T19:01:37.690Z: GraphQL request failed:
-    [ERROR] 2026-11-23T19:01:37.691Z: {
-    "errors": [
-        {
-        "message": "Cannot perform mutations over GET"
-        }
-    ]
-    }
+==> # GraphQL Invalid Request Tests
+ 
+| Invalid request | Status | Message | Resolver reached? |
+|---|---|---|---|
+| Test 3: Non-existing field (`bloodGroup` on `Seller`) | 400 Bad Request | Cannot query field "bloodGroup" on type "Seller". | No. query validation rejected. |
+| Test 4: Query with limit 500 | 200 OK | Limit must be between 1 and 100 | Yes.  resolver rejected the argument, so `shippedItems` is `null`. |
+| Test 5: Mutation with GET | 405 Method Not Allowed | Cannot perform mutations over GET | No. Blocked at the HTTP layer. |
